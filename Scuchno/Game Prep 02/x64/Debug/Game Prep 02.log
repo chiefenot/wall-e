@@ -1,2 +1,4 @@
 ﻿  main.cpp
-D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\Game Prep 02\main.cpp(9,10): fatal  error C1083: Cannot open include file: 'data.hpp': No such file or directory
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(34,68): warning C4267: 'argument': conversion from 'size_t' to 'int32_t', possible loss of data
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(143,40): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+  Game Prep 02.vcxproj -> D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\Game Prep 02\x64\Debug\Game Prep 02.exe
