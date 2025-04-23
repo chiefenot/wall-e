@@ -1,4 +1,4 @@
-﻿#include "data.hpp"
+#include "data.hpp"
 
 namespace scu {
 

@@ -1,251 +1,214 @@
 #include <iostream>
+#include <map>
 #include <set>
-#include <algorithm>
-
+#include <string>
 #include <io.h>
 #include <fcntl.h>
 #include <windows.h>
 
-#include "data.hpp"
 
-std::int32_t kColumns = 0;
-std::int32_t kRows = 0;
+#include "data.hpp" // предполагаем, что здесь описаны scu::Data, scu::Stage, Event, Choice и Trait
+using namespace scu;
 
-std::int32_t get_random_nmber(std::int32_t min, std::int32_t max) {
-    return 0;
+// Функция для вывода трейтов
+void print_trait(const Trait& trait) {
+	std::wcout << L"Трейт: " << trait.name << L" (" << trait.description << L") Значение: " << trait.value << std::endl;
 }
 
-std::string get_stage_according_to_age(std::int32_t age) {
-    return "S0";
+// Функция для вывода всех трейтов
+void print_traits(const std::map<std::string, Trait>& traits) {
+	for (const auto& trait : traits) {
+		print_trait(trait.second);  // Печать каждого трейта
+	}
 }
 
-std::string get_new_event_id(
-    const std::set<std::string>& used_events,
-    const std::map<std::string, std::int32_t>& chains,
-    const std::map<std::string, scu::Trait>& traits,
-    const std::string& stage_id) {
-    std::string event_id = "";
+// Функция для вывода событий
+void print_event(const Event& event) {
+	std::wcout << L"Событие: " << event.description << std::endl;
 
-    bool checks_passed = false;
-    while (!checks_passed) {
-        // Get the stage safely using find to avoid std::out_of_range
-        auto it = scu::Data::stages.find(stage_id);
-        if (it != scu::Data::stages.end()) {
-            int random = get_random_nmber(0, it->second.events.size());
-            event_id = "E" + std::to_string(random);
-        }
-        else {
-            std::cerr << "������: stage_id �� ������" << std::endl;
-            return "";
-        }
-
-        // Check if event_id exists in used_events
-
-        // Check if event is passsed traits checks
-
-        // Check if event is passsed chains checks
-
-        checks_passed = true; // Results
-    }
-
-    return event_id;
+	for (const auto& [choice_key, choice] : event.choices) {
+		std::wcout << L"  Выбор: " << choice.description << std::endl;
+	}
 }
 
-// Done
-std::wstring get_ending_description(const std::map<std::string, scu::Trait>& traits) {
-    for (const auto& ending : scu::Data::endings) {
-        auto it = traits.find(ending.condition_trait_id);
-        if (it != traits.end()) {
-            const scu::Trait& trait = it->second;
-
-            // Traits value should be equal or exceeds value
-            if (ending.is_condition_max && trait.value >= ending.condition_trait_value) {
-                return ending.description;
-            }
-            // Traits value should be equal or less than value
-            else if (!ending.is_condition_max && trait.value <= ending.condition_trait_value) {
-                return ending.description;
-            }
-        }
-        else {
-            std::cerr << "������: trait_id �� ������" << std::endl;
-        }
-    }
-    return L"";
+// Функция для вывода стадии
+void print_stage(const Stage& stage) {
+	std::wcout << L"Стадия: " << stage.name << L" (" << stage.description << L")\n";
+	for (const auto& event : stage.events) {  // Теперь правильное обращение
+		print_event(event.second); // Печать события
+	}
 }
 
-// Done
-void clear() {
-    COORD topLeft = { 0, 0 };
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO screen;
-    DWORD written;
-
-    GetConsoleScreenBufferInfo(console, &screen);
-    FillConsoleOutputCharacterA(
-        console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written
-    );
-    FillConsoleOutputAttribute(
-        console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
-        screen.dwSize.X * screen.dwSize.Y, topLeft, &written
-    );
-    SetConsoleCursorPosition(console, topLeft);
+// Функция для вывода всех данных
+void print_all_data() {
+	print_traits(Data::traits); // Печать всех трейтов
+	//  вывод стадий, если они есть
+	for (const auto& stage : Data::stages) {
+		print_stage(stage.second);  // Печать каждой стадии
+	}
 }
 
-// Done
-void show_text(const std::wstring& begining, const std::wstring& ending = L"") {
-    const std::size_t kLines = kRows - 3;
-    const std::size_t kCharsInLine = kColumns - 2;
 
-    std::vector<std::wstring> lines(kRows - 3, std::wstring(kCharsInLine, L' '));
-    const std::size_t kFiledSize = kLines * kCharsInLine;
+std::wstring check_ending(const std::map<std::string, scu::Trait>& traits) {
+	for (const auto& ending : scu::Data::endings) {
+		const scu::Trait& trait = traits.at(ending.condition_trait_id);
 
-    std::size_t i = 0;
-
-    for (std::size_t j = 0; j < begining.size() && i < kFiledSize; ++j) {
-        if (begining[j] == L'\n') {
-            i = kCharsInLine * ((i + kCharsInLine) / kCharsInLine);
-        }
-        else {
-            lines[i / kCharsInLine][i % kCharsInLine] = begining[j];
-            ++i;
-        }
-    }
-
-    std::size_t ending_n_count = std::count_if(ending.begin(), ending.end(), [](wchar_t c) {return c == L'\n'; });
-    std::size_t ending_size = ending.size() - ending_n_count + (ending_n_count * kCharsInLine);
-
-    i = (kFiledSize - ending_size) - ((kFiledSize - ending_size) % kCharsInLine);
-
-    for (std::size_t j = 0; j < ending.size() && i < kFiledSize; ++j) {
-        if (ending[j] == L'\n') {
-            i = kCharsInLine * ((i + kCharsInLine) / kCharsInLine);
-        }
-        else {
-            lines[i / kCharsInLine][i % kCharsInLine] = ending[j];
-            ++i;
-        }
-    }
-
-    std::wcout << L"+" << std::wstring(kColumns - 2, L'-') << L"+" << std::endl;
-    for (int i = 0; i < kRows - 3; ++i) {
-        std::wcout << L"|" << lines[i] << L"|" << std::endl;
-    }
-    std::wcout << L"+" << std::wstring(kColumns - 2, L'-') << L"+" << std::endl;
+		if (ending.is_condition_max && trait.value >= ending.condition_trait_value)
+			return ending.description;
+		if (!ending.is_condition_max && trait.value <= ending.condition_trait_value)
+			return ending.description;
+	}
+	return L"";
 }
 
-std::string process_event(const scu::Event& event) {
-    std::wstring choices;
-    std::map<std::uint32_t, std::string> choices_map;
-    // Prepare choices
-    for (const auto& choice : event.choices) {
-        choices += std::to_wstring(choices_map.size() + 1) + L". " + choice.second.description + L"\n";
-        choices_map[choices_map.size() + 1] = choice.first;
-    }
-    choices[choices.size() - 1] = L' ';
 
-    // Clear console
-    clear();
 
-    // Show event and options
-    show_text(event.description, choices);
 
-    // Request input
-    std::string temp;
-    std::cin >> temp;
 
-    // Check input correctness
+	void game_loop(scu::Stage * initial_stage) {
+		scu::Stage* current_stage = initial_stage;
+		SelectedEvents selected_events;
+		ActiveChains active_chains;
 
-    // Map input to choice id. Use choices_map.
-    // 
-    // Return choice id
-    return "C0";
-}
+		// Цикл игры, пока не достигнут финал
+		while (true) {
+			// 1. Выводим текущую стадию
+			std::wcout << L"Текущая стадия: " << current_stage->name << std::endl;
 
-int main() {
-    setlocale(LC_ALL, "Russian");
-    _setmode(_fileno(stdout), _O_U16TEXT);
+			bool event_found = false;  // Было ли найдено доступное событие для выбора
+			bool all_events_selected = true;  // Все ли события выбраны
 
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    kColumns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    kRows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+			// 2. Проверяем события текущей стадии
+			for (auto& event_pair : current_stage->events) {
+				std::string event_id = event_pair.first;
+				scu::Event& event = event_pair.second;
 
-    // Show welcome message
+				// Пропускаем, если событие уже выбрано
+				if (selected_events.is_event_selected(event_id)) {
+					continue;
+				}
 
-    // Request and save character name
+				// 3. Проверяем условия цепочек
+				bool can_activate_event = true;
 
-    // OPTIONAL: Request and save gender
+				// Проверяем условия цепочек
+				for (const auto& chain : event.conditions_chains) {
+					if (!active_chains.is_chain_active(chain.first)) {
+						can_activate_event = false;
+						break;
+					}
+				}
 
-    // Show initial info
+				// Если событие доступно для активации
+				if (can_activate_event) {
+					event_found = true;
+					all_events_selected = false;
 
-    std::string name;
-    std::map<std::string, scu::Trait> traits = scu::Data::traits;
-    std::map<std::string, std::int32_t> chains;
-    std::set<std::string> used_events;
+					// 4. Выводим описание события
+					std::wcout << L"Событие: " << event.description << std::endl;
 
-    bool is_died = false;
-    std::wstring ending_description;
+					// Выводим все доступные выборы
+					for (auto& choice_pair : event.choices) {
+						std::wcout << L"  Выбор: " << choice_pair.second.description << std::endl;
+					}
 
-    std::string previous_stage_id;
+					// Запрашиваем выбор игрока
+					std::wstring choice_input;
+					std::wcin >> choice_input;
 
-    int counter = 0;
-    while (!is_died) {
-        // Check stage according to age
-        std::string stage_id = get_stage_according_to_age(traits.at(scu::Data::age_trait_id).value);
+					// 5. Запоминаем выбранное событие
+					selected_events.add_event(event_id);
 
-        // Clear used_events if stage changed and remember new stage
-        if (stage_id != previous_stage_id) {
-            previous_stage_id = stage_id;
-            used_events.clear();
-        }
+					// Запоминаем активные цепочки из выбранного варианта
+					for (auto& chain_pair : event.choices[choice_input].chains) {
+						active_chains.add_chain(chain_pair.first);
+					}
+				}
+			}
 
-        // Choose the event
-        std::string event_id = get_new_event_id(used_events, chains, traits, stage_id);
-        auto it = scu::Data::stages.at(stage_id).events.find(event_id);
-        if (it != scu::Data::stages.at(stage_id).events.end()) {
-            const scu::Event& event = it->second;
+			// 6. Переход к следующей стадии, если все события выбраны или нет доступных событий
+			//if (!event_found || all_events_selected) {
+			//	auto next_stage_iter = Data::stages.find(current_stage->name);
+			//	if (next_stage_iter != Data::stages.end() && std::next(next_stage_iter) != Data::stages.end()) {
+			//		current_stage = &std::next(next_stage_iter)->second;  // Переход к следующей стадии
+			//		std::wcout << L"Вы переходите на следующий уровень: " << current_stage->name << std::endl;
+			//	}
+			//	else {
+			//		std::wcout << L"Вы достигли финала!" << std::endl;
+			//		break;  // Игра завершена
+			//	}
+			//}
 
-            // Process event
-            std::string choice_id = process_event(event);
+			// 7. Ожидаем, если необходимо, чтобы игрок продолжил
+			std::wcout << L"Нажмите Enter для продолжения..." << std::endl;
+			std::cin.ignore();
+			std::cin.get();
+		}
+	}
 
-            // Apply effects and chains
-            const scu::Choice& choice = event.choices.at(choice_id);
-            for (const auto& effect : choice.effects) {
-                // Apply effect
-            }
-            for (const auto& chain : choice.chains) {
-                // Apply chain
-            }
+	int main() {
+		SetConsoleOutputCP(CP_UTF8);
+		setlocale(LC_ALL, "Russian");
+		_setmode(_fileno(stdout), _O_U16TEXT);
 
-            // Apply age change
+		std::map<std::string, scu::Trait> traits = scu::Data::traits;
+		std::wstring ending_description;
 
-        }
-        else {
-            std::cerr << "������: event_id �� ������" << std::endl;
-        }
 
-        // Check that character still alive. If have ending description game should end, otherwise game continue.
-        //ending_description = get_ending_description(traits);
-        is_died = ending_description.empty();
-    }
 
-    // Prepare and show life results 
-    clear();
 
-    std::wstring life_description;
+		//std::string stage_id = "S0";  // начальный этап
+		//std::string event_id = "E0";  // первое событие (для теста)
 
-    for (auto desc : scu::Data::death_descriptions) {
-        auto it = traits.find(desc.trait_id);
-        if (it != traits.end() && it->second.value >= desc.min_value && it->second.value <= desc.max_value) {
-            life_description += desc.description + L" ";
-        }
-    }
+		//	print_all_data();
+		// Инициализация stage_id и event_id
+		const auto& stage = scu::Data::stages.begin()->second;
+		std::wcout << L"Stage name: " << stage.name << std::endl;
 
-    // Wait for chains descriptions will be provided
-    std::wstring chains_description;
+		//std::string stage_id = scu::Data::stages.begin()->first;
+		//std::cout << "Stage ID: " << stage_id << std::endl;
 
-    std::wstring result = ending_description + L"\n\n" + life_description + L"\n\n" + chains_description;
+		// Перебираем все стадии
+		//for (const auto& [id, stage] : scu::Data::stages) {
+		//	std::wcout << L"Stage ID: " << std::wstring(id.begin(), id.end()) << std::endl;
+		//	std::wcout << L"Name: " << stage.name << std::endl;
+		//	std::wcout << L"Description: " << stage.description << std::endl;
+		//	std::wcout << L"Age range: " << stage.min_age << L"–" << stage.max_age << std::endl;
+		//	std::wcout << L"-------------------------" << std::endl;
+		//}
 
-    show_text(result, L"�� ��������� ����� �����.\n");
-}
+		// Выводим значения
+		//std::wcout << L"stage_id: " << std::wstring(stage_id.begin(), stage_id.end()) << std::endl;
+
+		//std::wcout << L"event_id: " << event_id.c_str() << std::endl;
+
+		/*return 0;*/
+
+		//const scu::Stage& stage = scu::Data::stages.at(stage_id);
+		//const scu::Event& event = stage.events.at(event_id);
+
+		/*print_stage(stage);*/
+
+		// цикл до достижения одного из условий окончания
+		//(ending_description = check_ending(traits)).empty()
+		//while (false) {
+		//	system("cls");
+
+		//	std::wcout << L"=== Этап: " << stage_id.c_str() << L" | Событие: " << event_id.c_str() << L" ===\n";
+		//	print_traits(traits);
+		//	print_event(event);
+
+		//	std::wcout << L"\n(Заглушка: конец цикла, так как выбор не реализован)\n";
+		//	break;  // сейчас просто один шаг
+		//}
+
+		//if (!ending_description.empty()) {
+		//	std::wcout << L"\nКонец игры: " << ending_description << std::endl;
+		//}
+		//return 0;
+		// Инициализируем игру с начальной стадии
+		scu::Stage* initial_stage = &scu::Data::stages["S0"];
+		game_loop(initial_stage);
+		return 0;
+	}
+

@@ -1,3 +1,4 @@
+#pragma once //защита от переопределения
 #include <map>
 #include <string>
 
@@ -7,6 +8,7 @@ namespace scu {
 		std::wstring name;
 		std::wstring description;
 		std::int32_t value;
+
 	};
 
 	struct Choice {
@@ -62,3 +64,30 @@ namespace scu {
 		std::int32_t max_value;
 	};
 }
+
+//
+
+
+struct SelectedEvents {
+	std::map<std::string, bool> selected_events;
+
+	bool is_event_selected(const std::string& event_id) {
+		return selected_events.count(event_id) > 0;
+	}
+
+	void add_event(const std::string& event_id) {
+		selected_events[event_id] = true;
+	}
+};
+
+struct ActiveChains {
+	std::map<std::string, bool> active_chains;
+
+	bool is_chain_active(const std::string& chain_id) {
+		return active_chains.count(chain_id) > 0;
+	}
+
+	void add_chain(const std::string& chain_id) {
+		active_chains[chain_id] = true;
+	}
+};

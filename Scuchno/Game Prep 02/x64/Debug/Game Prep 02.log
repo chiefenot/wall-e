@@ -1,4 +1,21 @@
 ﻿  main.cpp
-D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(34,68): warning C4267: 'argument': conversion from 'size_t' to 'int32_t', possible loss of data
-D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(143,40): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-  Game Prep 02.vcxproj -> D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\Game Prep 02\x64\Debug\Game Prep 02.exe
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0xf that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x12 that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x16 that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x19 that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x1c that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x1f that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x23 that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\types.hpp(1,1): warning C4828: The file contains a character starting at offset 0x26 that is illegal in the current source character set (codepage 65001).
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(123,35): error C2679: binary '[': no operator found which takes a right-hand operand of type 'std::wstring' (or there is no acceptable conversion)
+D:\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.36.32532\include\map(344,18): message : could be 'scu::Choice &std::map<std::string,scu::Choice,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Choice>>>::operator [](const std::basic_string<char,std::char_traits<char>,std::allocator<char>> &)'
+D:\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.36.32532\include\map(173,18): message : or       'scu::Choice &std::map<std::string,scu::Choice,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Choice>>>::operator [](std::basic_string<char,std::char_traits<char>,std::allocator<char>> &&)'
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(123,35): message : while trying to match the argument list '(std::map<std::string,scu::Choice,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Choice>>>, std::wstring)'
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(123,6): error C2530: 'chain_pair': references must be initialized
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(123,6): error C3531: 'chain_pair': a symbol whose type contains 'auto' must have an initializer
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(123,28): error C2143: syntax error: missing ';' before ':'
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(123,64): error C2143: syntax error: missing ';' before ')'
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(210,43): error C2678: binary '[': no operator found which takes a left-hand operand of type 'const std::map<std::string,scu::Stage,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Stage>>>' (or there is no acceptable conversion)
+D:\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.36.32532\include\map(344,18): message : could be 'scu::Stage &std::map<std::string,scu::Stage,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Stage>>>::operator [](const std::basic_string<char,std::char_traits<char>,std::allocator<char>> &)'
+D:\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.36.32532\include\map(173,18): message : or       'scu::Stage &std::map<std::string,scu::Stage,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Stage>>>::operator [](std::basic_string<char,std::char_traits<char>,std::allocator<char>> &&)'
+D:\!Вова-Саша\1prep\cpp-life-game\Scuchno\main.cpp(210,43): message : while trying to match the argument list '(const std::map<std::string,scu::Stage,std::less<std::string>,std::allocator<std::pair<const std::string,scu::Stage>>>, const char [3])'
